@@ -1,0 +1,1384 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TransRefine – Hi‑Fi Demo</title>
+  <style>
+    :root {
+      --primary-blue: #4F8EFF;
+      --secondary-red: #E84A5F;
+      --accent-purple: #8B63A9;
+      --success-green: #6EE7B7;
+      --bg-dark: #0F1733;
+      --bg-light: #FFFFFF;
+      --ink: #1A1A1A;
+      --muted: #A9B3D1;
+      --border-subtle: #E0E4EF;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: #F5F6FF;
+      color: var(--ink);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: stretch;
+    }
+
+    .app-shell {
+      max-width: 1120px;
+      width: 100%;
+      margin: 0 auto;
+      padding: 16px 16px 40px;
+    }
+
+    /* Header */
+    .app-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 16px;
+      border-radius: 16px;
+      background: linear-gradient(135deg, #0F1733, #182544);
+      color: #fff;
+      box-shadow: 0 16px 40px rgba(0, 0, 0, 0.25);
+      margin-bottom: 18px;
+    }
+
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      cursor: pointer;
+    }
+
+    .logo-mark {
+      display: flex;
+      align-items: center;
+      justify-content: flex-start;
+      height: 40px;
+      padding-right: 8px;
+      /* No clipping: show full SVG */
+      border-radius: 0;
+      overflow: visible;
+      background: transparent;
+      box-shadow: none;
+    }
+
+    .logo-mark img {
+      height: 40px;
+      width: auto;
+      object-fit: contain;
+      display: block;
+    }
+
+    .header-title {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .header-title-main {
+      font-weight: 700;
+      font-size: 18px;
+      letter-spacing: 0.03em;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .header-title-main span:nth-child(2) {
+      font-weight: 400;
+      font-size: 16px;
+      opacity: 0.9;
+    }
+
+    .header-subtitle {
+      font-size: 12px;
+      color: #D1DBFF;
+    }
+
+    .header-right {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .icon-button {
+      border: none;
+      background: transparent;
+      cursor: pointer;
+      padding: 4px;
+      border-radius: 999px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .icon-button:hover {
+      background: rgba(255, 255, 255, 0.1);
+    }
+
+    .icon {
+      width: 24px;
+      height: 24px;
+      display: inline-block;
+    }
+
+    .icon img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      display: block;
+    }
+
+    /* S1 main panel */
+    .card {
+      background: var(--bg-light);
+      border-radius: 16px;
+      box-shadow: 0 12px 30px rgba(15, 23, 51, 0.12);
+      padding: 16px 18px 18px;
+    }
+
+    .s1-header-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-bottom: 8px;
+    }
+
+    .select-voice {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      border-radius: 999px;
+      border: 1px solid var(--border-subtle);
+      padding: 4px 10px 4px 10px;
+      background: #F8FAFF;
+    }
+
+    .select-voice select {
+      border: none;
+      background: transparent;
+      font-size: 14px;
+      outline: none;
+    }
+
+    .primary-btn {
+      border-radius: 999px;
+      background: var(--primary-blue);
+      color: #fff;
+      padding: 10px 26px;
+      border: none;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      box-shadow: 0 8px 18px rgba(79, 142, 255, 0.35);
+      font-size: 15px;
+      font-weight: 600;
+      white-space: nowrap;
+    }
+
+    .primary-btn:hover {
+      background: #3F79E0;
+    }
+
+    .checkbox-inline {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 13px;
+      color: #4B5563;
+      cursor: pointer;
+    }
+
+    .checkbox-inline input {
+      margin: 0;
+    }
+
+    .divider {
+      height: 1px;
+      background: #E5E7F5;
+      margin: 10px 0 6px;
+    }
+
+    .text-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 8px;
+    }
+
+    .text-row-label {
+      width: 24px;
+      display: flex;
+      justify-content: center;
+    }
+
+    .text-row-main {
+      flex: 1;
+      padding: 8px 10px;
+      border-radius: 10px;
+      border: 1px solid var(--border-subtle);
+      background: #F9FAFF;
+      font-size: 14px;
+      min-height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .text-row-main span {
+      flex: 1;
+      text-align: left;
+      color: #1F2933;
+    }
+
+    .text-row-actions {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .text-row-actions .icon-button {
+      padding: 2px;
+    }
+
+    /* History */
+    .history-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-top: 4px;
+      margin-bottom: 4px;
+      font-size: 13px;
+      color: #4B5563;
+    }
+
+    .history-list {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      max-height: 220px;
+      overflow-y: auto;
+      padding-right: 2px;
+    }
+
+    .history-item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 8px;
+      border-radius: 10px;
+      border: 1px solid #EEF0FF;
+      background: #FDFDFF;
+      font-size: 13px;
+    }
+
+    .history-text {
+      flex: 1;
+      text-align: left;
+    }
+
+    .history-cta-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 8px;
+      font-size: 13px;
+    }
+
+    .link-btn {
+      border: none;
+      background: transparent;
+      color: var(--primary-blue);
+      font-size: 13px;
+      cursor: pointer;
+      padding: 0;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .floating-mic {
+      position: fixed;
+      right: 20px;
+      bottom: 20px;
+      width: 70px;
+      height: 70px;
+      border-radius: 999px;
+      background: var(--secondary-red);
+      color: #fff;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 2px;
+      box-shadow: 0 10px 26px rgba(232, 74, 95, 0.55);
+      cursor: pointer;
+      font-size: 11px;
+      z-index: 900;
+    }
+
+    .floating-mic .icon {
+      width: 22px;
+      height: 22px;
+    }
+
+    /* Side menu (S2) */
+    .side-menu-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 51, 0.45);
+      display: none;
+      z-index: 700;
+    }
+
+    .side-menu-backdrop.active {
+      display: block;
+    }
+
+    .side-menu {
+      position: absolute;
+      top: 0;
+      right: 0;
+      width: 230px;
+      max-width: 80%;
+      height: 100%;
+      background: #FFFFFF;
+      box-shadow: -12px 0 30px rgba(15, 23, 51, 0.35);
+      padding-top: 60px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .side-menu ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    .side-menu li {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 16px;
+      cursor: pointer;
+      font-size: 14px;
+      color: #111827;
+    }
+
+    .side-menu li:hover {
+      background: #F3F4FF;
+    }
+
+    .side-menu li .icon {
+      width: 20px;
+      height: 20px;
+    }
+
+    /* Modals (S3–S14) */
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 51, 0.55);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 800;
+    }
+
+    .modal-backdrop.active {
+      display: flex;
+    }
+
+    .modal-card {
+      background: #FFFFFF;
+      border-radius: 16px;
+      box-shadow: 0 20px 40px rgba(15, 23, 51, 0.38);
+      max-width: 520px;
+      width: 92%;
+      padding: 20px 20px 18px;
+    }
+
+    .modal-header {
+      font-size: 18px;
+      font-weight: 600;
+      margin-bottom: 12px;
+      text-align: center;
+    }
+
+    .modal-body {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .modal-body label {
+      font-size: 13px;
+      text-align: left;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .modal-body input,
+    .modal-body textarea,
+    .modal-body select {
+      border-radius: 8px;
+      border: 1px solid var(--border-subtle);
+      padding: 8px 9px;
+      font-size: 14px;
+      font-family: inherit;
+    }
+
+    .modal-body textarea {
+      min-height: 130px;
+      resize: vertical;
+    }
+
+    .modal-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+      margin-top: 16px;
+    }
+
+    .btn {
+      border-radius: 8px;
+      border: none;
+      padding: 7px 16px;
+      font-size: 14px;
+      cursor: pointer;
+      font-family: inherit;
+    }
+
+    .btn-primary {
+      background: var(--primary-blue);
+      color: #fff;
+      box-shadow: 0 8px 18px rgba(79, 142, 255, 0.35);
+    }
+
+    .btn-secondary {
+      background: #E5E7F5;
+      color: #111827;
+    }
+
+    .btn-text {
+      background: transparent;
+      color: var(--primary-blue);
+      padding: 0;
+    }
+
+    .pill-button {
+      border-radius: 999px;
+    }
+
+    .chip-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .muted {
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    @media (max-width: 640px) {
+      .app-shell {
+        padding: 12px 10px 72px;
+      }
+
+      .card {
+        padding: 12px 12px 14px;
+      }
+
+      .history-list {
+        max-height: 180px;
+      }
+
+      .floating-mic {
+        width: 64px;
+        height: 64px;
+        bottom: 12px;
+        right: 12px;
+      }
+    }
+
+  </style>
+</head>
+<body>
+<main>
+  <div class="app-shell">
+    <header class="app-header" onclick="goHome()">
+      <div class="header-left">
+        <div class="logo-mark">
+          <img src="logo/logo.svg" alt="TransRefine logo">
+        </div>
+        <div class="header-title">
+          <div class="header-title-main">
+            <span>TransRefine</span>
+            <span>EN / 中</span>
+          </div>
+          <div class="header-subtitle">Translate • Refine • Understand</div>
+        </div>
+      </div>
+      <div class="header-right">
+        <button class="icon-button" aria-label="Open menu" onclick="toggleSideMenu(event)">
+          <span class="icon"><img src="icons/menu_24dp_1F1F1F_FILL0_wght400_GRAD0_opsz24.svg" alt=""></span>
+        </button>
+      </div>
+    </header>
+
+    <!-- S1 – Home / TranslateRefine -->
+    <section class="card" aria-label="Translation and refinement workspace">
+      <div class="s1-header-row">
+        <div class="select-voice">
+          <span class="icon"><img src="icons/list_24dp_1F1F1F_FILL0_wght400_GRAD0_opsz24.svg" alt=""></span>
+          <select id="voiceSelect">
+            <option value="nova">Nova</option>
+            <option value="shimmer">Shimmer</option>
+            <option value="echo">Echo</option>
+            <option value="onyx">Onyx</option>
+            <option value="fable">Fable</option>
+            <option value="alloy">Alloy</option>
+          </select>
+        </div>
+
+        <button class="primary-btn" id="startSpeakingBtn" onclick="simulateSpeaking('button')">
+          <span class="icon"><img src="icons/mic_24dp_1F1F1F_FILL0_wght400_GRAD0_opsz24.svg" alt=""></span>
+          <span>Start Speaking</span>
+        </button>
+
+        <label class="checkbox-inline">
+          <input type="checkbox" id="refineOnlyCheckbox">
+          <span>Refine only</span>
+        </label>
+      </div>
+
+      <div class="divider"></div>
+
+      <!-- Transcript row -->
+      <div class="text-row">
+        <div class="text-row-label">
+          <span class="icon"><img src="icons/edit_24dp_1F1F1F_FILL0_wght400_GRAD0_opsz24.svg" alt=""></span>
+        </div>
+        <div class="text-row-main" id="transcriptRow">
+          <span id="transcriptText">Your transcript will appear here after you speak or paste text.</span>
+          <div class="text-row-actions">
+            <button class="icon-button" aria-label="Edit transcript" onclick="openEditModal('transcript')">
+              <span class="icon"><img src="icons/edit_24dp_1F1F1F_FILL0_wght400_GRAD0_opsz24.svg" alt=""></span>
+            </button>
+            <button class="icon-button" aria-label="Copy transcript" onclick="copyTextFromElement('transcriptText')">
+              <span class="icon"><img src="icons/content_copy_24dp_1F1F1F_FILL0_wght400_GRAD0_opsz24.svg" alt=""></span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Translation row -->
+      <div class="text-row">
+        <div class="text-row-label">
+          <button class="icon-button" aria-label="Play translation audio" onclick="openPlayAudioFromCurrent()">
+            <span class="icon"><img src="icons/volume_up_24dp_1F1F1F_FILL0_wght400_GRAD0_opsz24.svg" alt=""></span>
+          </button>
+        </div>
+        <div class="text-row-main" id="translationRow">
+          <span id="translationText">Refined translation will appear here.</span>
+          <div class="text-row-actions">
+            <button class="icon-button" aria-label="Copy translation" onclick="copyTextFromElement('translationText')">
+              <span class="icon"><img src="icons/content_copy_24dp_1F1F1F_FILL0_wght400_GRAD0_opsz24.svg" alt=""></span>
+            </button>
+            <button class="icon-button" aria-label="Share translation audio" onclick="shareCurrent()">
+              <span class="icon"><img src="icons/share_24dp_1F1F1F_FILL0_wght400_GRAD0_opsz24.svg" alt=""></span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="history-header">
+        <span>Recent history</span>
+        <button class="link-btn" onclick="openHistoryDetailsModal()">
+          <span class="icon" style="width:16px;height:16px;"><img src="icons/history_2_24dp_1F1F1F_FILL0_wght400_GRAD0_opsz24.svg" alt=""></span>
+          <span>History details</span>
+        </button>
+      </div>
+
+      <div id="historyList" class="history-list"></div>
+
+      <div class="history-cta-row">
+        <span class="muted">Tip: click any history item to replay or reuse it.</span>
+        <button class="link-btn" onclick="simulateSpeaking('sample')">
+          <span class="icon" style="width:16px;height:16px;"><img src="icons/translate_24dp_1F1F1F_FILL0_wght400_GRAD0_opsz24.svg" alt=""></span>
+          <span>Generate sample pair</span>
+        </button>
+      </div>
+    </section>
+  </div>
+</main>
+
+<!-- Hold2Say floating button -->
+<button class="floating-mic" onclick="simulateSpeaking('hold')">
+  <span class="icon"><img src="icons/mic_24dp_1F1F1F_FILL0_wght400_GRAD0_opsz24.svg" alt=""></span>
+  <span>Hold2Say</span>
+</button>
+
+<!-- S2 Menu -->
+<div id="sideMenuBackdrop" class="side-menu-backdrop" onclick="closeSideMenu()">
+  <nav class="side-menu" onclick="event.stopPropagation()">
+    <ul>
+      <li onclick="goHome(); closeSideMenu();">
+        <span class="icon"><img src="icons/translate_24dp_1F1F1F_FILL0_wght400_GRAD0_opsz24.svg" alt=""></span>
+        <span>Home / Translate</span>
+      </li>
+      <li onclick="openLoginModal();">
+        <span class="icon"><img src="icons/check_24dp_1F1F1F_FILL0_wght400_GRAD0_opsz24.svg" alt=""></span>
+        <span>Login</span>
+      </li>
+      <li onclick="openImportModal();">
+        <span class="icon"><img src="icons/export_notes_24dp_1F1F1F_FILL0_wght400_GRAD0_opsz24.svg" alt=""></span>
+        <span>Import</span>
+      </li>
+      <li onclick="openExportModal();">
+        <span class="icon"><img src="icons/export_notes_24dp_1F1F1F_FILL0_wght400_GRAD0_opsz24.svg" alt=""></span>
+        <span>Export</span>
+      </li>
+      <li onclick="openSettingsModal();">
+        <span class="icon"><img src="icons/settings_24dp_1F1F1F_FILL0_wght400_GRAD0_opsz24.svg" alt=""></span>
+        <span>Settings</span>
+      </li>
+      <li onclick="openSubscribeModal();">
+        <span class="icon"><img src="icons/check_box_24dp_1F1F1F_FILL0_wght400_GRAD0_opsz24.svg" alt=""></span>
+        <span>Subscribe</span>
+      </li>
+      <li onclick="openHelpModal();">
+        <span class="icon"><img src="icons/help_24dp_1F1F1F_FILL0_wght400_GRAD0_opsz24.svg" alt=""></span>
+        <span>Help</span>
+      </li>
+    </ul>
+  </nav>
+</div>
+
+<!-- S3 – Edit text input -->
+<div id="editModal" class="modal-backdrop" role="dialog" aria-modal="true">
+  <div class="modal-card">
+    <div class="modal-header">Edit text input</div>
+    <div class="modal-body">
+      <label>
+        Input or modify text
+        <textarea id="editTextarea"></textarea>
+      </label>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-secondary" onclick="closeAllModals()">Cancel</button>
+      <button class="btn btn-primary" onclick="saveEdit()">OK</button>
+    </div>
+  </div>
+</div>
+
+<!-- S4 Login -->
+<div id="loginModal" class="modal-backdrop">
+  <div class="modal-card">
+    <div class="modal-header">Login</div>
+    <div class="modal-body">
+      <label>
+        Your email
+        <input type="email" id="loginEmail" placeholder="you@example.com">
+      </label>
+      <label>
+        Your password
+        <input type="password" id="loginPassword" placeholder="••••••••">
+      </label>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-secondary" onclick="closeAllModals()">Cancel</button>
+      <button class="btn btn-primary" onclick="demoLogin()">OK</button>
+    </div>
+    <div style="margin-top:10px; text-align:center; font-size:13px;">
+      Or <button class="btn-text" onclick="switchToRegister()">Register</button>
+    </div>
+  </div>
+</div>
+
+<!-- S13 Register -->
+<div id="registerModal" class="modal-backdrop">
+  <div class="modal-card">
+    <div class="modal-header">Register</div>
+    <div class="modal-body">
+      <label>
+        Your email
+        <input type="email" id="registerEmail" placeholder="you@example.com">
+      </label>
+      <label>
+        Your password
+        <input type="password" id="registerPassword" placeholder="Create a password">
+      </label>
+      <label>
+        Retype password
+        <input type="password" id="registerPasswordConfirm" placeholder="Retype password">
+      </label>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-secondary" onclick="closeAllModals()">Cancel</button>
+      <button class="btn btn-primary" onclick="demoRegister()">OK</button>
+    </div>
+  </div>
+</div>
+
+<!-- S5 Import -->
+<div id="importModal" class="modal-backdrop">
+  <div class="modal-card">
+    <div class="modal-header">Import</div>
+    <div class="modal-body">
+      <label>
+        Import from file …
+        <input type="file" id="importFileInput" accept=".json,.txt">
+      </label>
+      <p class="muted">
+        In this demo, imported items are read locally and added to your history only in this browser.
+      </p>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-secondary" onclick="closeAllModals()">Cancel</button>
+      <button class="btn btn-primary" onclick="demoImport()">OK</button>
+    </div>
+  </div>
+</div>
+
+<!-- S6 Export -->
+<div id="exportModal" class="modal-backdrop">
+  <div class="modal-card">
+    <div class="modal-header">Export</div>
+    <div class="modal-body">
+      <p>
+        Export your current history as a JSON file to download and reuse later.
+      </p>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-secondary" onclick="closeAllModals()">Cancel</button>
+      <button class="btn btn-primary" onclick="demoExport()">Export to file …</button>
+    </div>
+  </div>
+</div>
+
+<!-- S7 Settings -->
+<div id="settingsModal" class="modal-backdrop">
+  <div class="modal-card">
+    <div class="modal-header">Settings</div>
+    <div class="modal-body">
+      <label>
+        Max history records number
+        <input type="number" id="maxHistoryInput" min="1" value="100000">
+      </label>
+      <label>
+        Max voice input duration (minutes)
+        <input type="number" id="maxDurationInput" min="1" value="20">
+      </label>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-secondary" onclick="closeAllModals()">Cancel</button>
+      <button class="btn btn-primary" onclick="saveDemoSettings()">Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- S8 Help -->
+<div id="helpModal" class="modal-backdrop">
+  <div class="modal-card">
+    <div class="modal-header">Help</div>
+    <div class="modal-body">
+      <p>1. Select a voice, then press <strong>Start Speaking</strong> or use <strong>Hold2Say</strong> to generate a transcript and translation.</p>
+      <p>2. Use <strong>Refine only</strong> if you want to keep the same language and just polish the text.</p>
+      <p>3. Use the history section to replay, copy, share, or open <strong>History details</strong> for more controls.</p>
+      <p>4. Import / Export manage your history as files; Settings lets you adjust demo caps.</p>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-primary" onclick="closeAllModals()">OK</button>
+    </div>
+  </div>
+</div>
+
+<!-- S9 Play Audio -->
+<div id="playAudioModal" class="modal-backdrop">
+  <div class="modal-card">
+    <div class="modal-header">Play Audio</div>
+    <div class="modal-body">
+      <label>
+        Select voice
+        <select id="playVoiceSelect">
+          <option value="nova">Nova</option>
+          <option value="shimmer">Shimmer</option>
+          <option value="echo">Echo</option>
+          <option value="onyx">Onyx</option>
+          <option value="fable">Fable</option>
+          <option value="alloy">Alloy</option>
+        </select>
+      </label>
+      <audio id="playAudioElement" controls style="width:100%; margin-top:4px;">
+        <source id="playAudioSource" src="">
+      </audio>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-secondary" onclick="closeAllModals()">Cancel</button>
+      <button class="btn btn-primary" onclick="closeAllModals()">OK</button>
+    </div>
+  </div>
+</div>
+
+<!-- S11 History Records Details -->
+<div id="historyDetailsModal" class="modal-backdrop">
+  <div class="modal-card" style="max-width:640px;">
+    <div class="modal-header">History Records Details</div>
+    <div class="modal-body" id="historyDetailsBody" style="max-height:320px; overflow-y:auto;"></div>
+    <div class="modal-actions">
+      <button class="btn btn-primary" onclick="closeAllModals()">Back</button>
+    </div>
+  </div>
+</div>
+
+<!-- S12 Share Audio -->
+<div id="shareModal" class="modal-backdrop">
+  <div class="modal-card">
+    <div class="modal-header">Share Audio</div>
+    <div class="modal-body">
+      <div class="chip-row">
+        <button class="btn btn-secondary pill-button" data-share-option="airdrop">AirDrop</button>
+        <button class="btn btn-secondary pill-button" data-share-option="email">Email</button>
+        <button class="btn btn-secondary pill-button" data-share-option="other">Other app</button>
+      </div>
+      <p class="muted">Choose a channel, then press OK to simulate sharing via your browser's share/download features.</p>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-secondary" onclick="closeAllModals()">Cancel</button>
+      <button class="btn btn-primary" onclick="confirmDemoShare()">OK</button>
+    </div>
+  </div>
+</div>
+
+<!-- S14 Subscribe -->
+<div id="subscribeModal" class="modal-backdrop">
+  <div class="modal-card" style="max-width:720px;">
+    <div class="modal-header">Subscribe</div>
+    <div class="modal-body" style="flex-direction:row; gap:22px; align-items:flex-start;">
+      <div style="flex:2; background:#F3F4FF; padding:12px; border-radius:12px;">
+        <div class="chip-row" style="margin-bottom:10px;">
+          <button class="btn btn-secondary pill-button" id="planMonthlyBtn" onclick="selectPlan('monthly')">Monthly – $10</button>
+          <button class="btn btn-secondary pill-button" id="planYearlyBtn" onclick="selectPlan('yearly')">Yearly – $100</button>
+        </div>
+        <div style="font-weight:600; margin-bottom:6px;">Payment methods</div>
+        <div class="chip-row" style="margin-bottom:8px;">
+          <button class="btn btn-secondary pill-button" onclick="selectPaymentMethod('card')">Credit card</button>
+          <button class="btn btn-secondary pill-button" onclick="selectPaymentMethod('paypal')">PayPal</button>
+        </div>
+        <div id="cardForm">
+          <input type="text" placeholder="Card number" style="width:100%; margin-bottom:6px;">
+          <input type="text" placeholder="MM/YY CVC" style="width:100%;">
+        </div>
+      </div>
+      <div style="flex:1; background:#F3F4FF; padding:12px; border-radius:12px;">
+        <div style="font-weight:600; margin-bottom:6px;">Subscribe status</div>
+        <ul style="list-style:none; padding:0; margin:0; font-size:14px;">
+          <li id="statusNone">None</li>
+          <li id="statusMonthly">Monthly</li>
+          <li id="statusYearly">Yearly</li>
+        </ul>
+      </div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-secondary" onclick="closeAllModals()">Cancel</button>
+      <button class="btn btn-primary" onclick="confirmDemoSubscribe()">Subscribe &amp; pay</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  // Simple in-memory state
+  const historyItems = [];
+  let editTarget = null; // 'transcript' | 'translation'
+  let pendingShare = { url: '', text: '' };
+  let selectedShareOption = 'airdrop';
+  let demoSelectedPlan = 'none';
+  let demoPaymentMethod = 'card';
+
+  const demoAudioUrl = 'data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEAESsAACJWAAACABAAZGF0YQAAAAA='; // tiny silent sound
+
+  function byId(id) {
+    return document.getElementById(id);
+  }
+
+  function renderHistory() {
+    const list = byId('historyList');
+    list.innerHTML = '';
+    historyItems.slice().reverse().forEach((item, index) => {
+      const row = document.createElement('div');
+      row.className = 'history-item';
+
+      const playBtn = document.createElement('button');
+      playBtn.className = 'icon-button';
+      playBtn.innerHTML = '<span class="icon"><img src="icons/volume_up_24dp_1F1F1F_FILL0_wght400_GRAD0_opsz24.svg" alt=""></span>';
+      playBtn.onclick = (e) => {
+        e.stopPropagation();
+        openPlayAudioModal(item.audioUrl || demoAudioUrl);
+      };
+
+      const text = document.createElement('div');
+      text.className = 'history-text';
+      text.textContent = item.transcript + ' / ' + item.translation;
+      text.onclick = () => {
+        byId('transcriptText').textContent = item.transcript;
+        byId('translationText').textContent = item.translation;
+      };
+
+      const copyBtn = document.createElement('button');
+      copyBtn.className = 'icon-button';
+      copyBtn.innerHTML = '<span class="icon"><img src="icons/content_copy_24dp_1F1F1F_FILL0_wght400_GRAD0_opsz24.svg" alt=""></span>';
+      copyBtn.onclick = (e) => {
+        e.stopPropagation();
+        copyToClipboard(item.translation).then(() => showToast('Copied translation'));
+      };
+
+      const shareBtn = document.createElement('button');
+      shareBtn.className = 'icon-button';
+      shareBtn.innerHTML = '<span class="icon"><img src="icons/share_24dp_1F1F1F_FILL0_wght400_GRAD0_opsz24.svg" alt=""></span>';
+      shareBtn.onclick = (e) => {
+        e.stopPropagation();
+        pendingShare = { url: item.audioUrl || demoAudioUrl, text: item.translation };
+        openShareModal();
+      };
+
+      row.appendChild(playBtn);
+      row.appendChild(text);
+      row.appendChild(copyBtn);
+      row.appendChild(shareBtn);
+      list.appendChild(row);
+    });
+  }
+
+  function simulateSpeaking(source) {
+    const refineOnly = byId('refineOnlyCheckbox').checked;
+    const prefix = source === 'hold' ? '🎙 Hold2Say' : (source === 'sample' ? 'Demo' : 'Mic');
+    const transcript = prefix + ' input about bilingual design';
+    const translation = refineOnly
+      ? 'Refined version of the same‑language text about bilingual design.'
+      : 'This is a polished English ↔ Chinese translation about bilingual design.';
+
+    byId('transcriptText').textContent = transcript;
+    byId('translationText').textContent = translation;
+
+    historyItems.push({
+      transcript,
+      translation,
+      audioUrl: demoAudioUrl
+    });
+    renderHistory();
+    showToast('Generated sample pair');
+  }
+
+  function copyTextFromElement(id) {
+    const el = byId(id);
+    const text = el ? el.textContent : '';
+    copyToClipboard(text).then(() => showToast('Copied'));
+  }
+
+  function openEditModal(target) {
+    editTarget = target;
+    const current = target === 'transcript'
+      ? byId('transcriptText').textContent
+      : byId('translationText').textContent;
+    byId('editTextarea').value = current;
+    openModal('editModal');
+  }
+
+  function saveEdit() {
+    const value = byId('editTextarea').value.trim();
+    if (!editTarget) {
+      closeAllModals();
+      return;
+    }
+    if (editTarget === 'transcript') {
+      byId('transcriptText').textContent = value || '…';
+    } else {
+      byId('translationText').textContent = value || '…';
+    }
+    // Also push into history as a new item
+    historyItems.push({
+      transcript: byId('transcriptText').textContent,
+      translation: byId('translationText').textContent,
+      audioUrl: demoAudioUrl
+    });
+    renderHistory();
+    closeAllModals();
+  }
+
+  function openPlayAudioFromCurrent() {
+    const url = demoAudioUrl;
+    openPlayAudioModal(url);
+  }
+
+  function openPlayAudioModal(url) {
+    const audio = byId('playAudioElement');
+    audio.src = url || demoAudioUrl;
+    audio.load();
+    openModal('playAudioModal');
+  }
+
+  function shareCurrent() {
+    pendingShare = {
+      url: demoAudioUrl,
+      text: byId('translationText').textContent
+    };
+    openShareModal();
+  }
+
+  function openShareModal() {
+    const buttons = document.querySelectorAll('#shareModal [data-share-option]');
+    buttons.forEach(btn => {
+      const active = btn.dataset.shareOption === selectedShareOption;
+      btn.style.background = active ? 'var(--primary-blue)' : '#E5E7F5';
+      btn.style.color = active ? '#fff' : '#111827';
+      btn.onclick = () => {
+        selectedShareOption = btn.dataset.shareOption;
+        openShareModal();
+      };
+    });
+    openModal('shareModal');
+  }
+
+  function confirmDemoShare() {
+    if (pendingShare && pendingShare.url) {
+      // Try navigator.share where available, otherwise just download
+      if (navigator.share) {
+        navigator.share({
+          title: 'TransRefine audio',
+          text: pendingShare.text || 'Shared from TransRefine',
+          url: pendingShare.url
+        }).catch(() => {});
+      } else {
+        const a = document.createElement('a');
+        a.href = pendingShare.url;
+        a.download = 'transrefine-audio';
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+      }
+      showToast('Shared via ' + selectedShareOption);
+    }
+    closeAllModals();
+  }
+
+  function openHistoryDetailsModal() {
+    const body = byId('historyDetailsBody');
+    body.innerHTML = '';
+    if (!historyItems.length) {
+      const p = document.createElement('p');
+      p.className = 'muted';
+      p.textContent = 'No history yet. Generate something on the home screen first.';
+      body.appendChild(p);
+    } else {
+      historyItems.slice().reverse().forEach((item, idx) => {
+        const row = document.createElement('div');
+        row.className = 'history-item';
+
+        const playBtn = document.createElement('button');
+        playBtn.className = 'icon-button';
+        playBtn.innerHTML = '<span class="icon"><img src="icons/volume_up_24dp_1F1F1F_FILL0_wght400_GRAD0_opsz24.svg" alt=""></span>';
+        playBtn.onclick = (e) => {
+          e.stopPropagation();
+          openPlayAudioModal(item.audioUrl || demoAudioUrl);
+        };
+
+        const text = document.createElement('div');
+        text.className = 'history-text';
+        text.textContent = item.transcript + ' / ' + item.translation;
+
+        const copyBtn = document.createElement('button');
+        copyBtn.className = 'icon-button';
+        copyBtn.innerHTML = '<span class="icon"><img src="icons/content_copy_24dp_1F1F1F_FILL0_wght400_GRAD0_opsz24.svg" alt=""></span>';
+        copyBtn.onclick = (e) => {
+          e.stopPropagation();
+          copyToClipboard(item.translation).then(() => showToast('Copied translation'));
+        };
+
+        const shareBtn = document.createElement('button');
+        shareBtn.className = 'icon-button';
+        shareBtn.innerHTML = '<span class="icon"><img src="icons/share_24dp_1F1F1F_FILL0_wght400_GRAD0_opsz24.svg" alt=""></span>';
+        shareBtn.onclick = (e) => {
+          e.stopPropagation();
+          pendingShare = { url: item.audioUrl || demoAudioUrl, text: item.translation };
+          openShareModal();
+        };
+
+        const deleteBtn = document.createElement('button');
+        deleteBtn.className = 'icon-button';
+        deleteBtn.innerHTML = '<span class="icon"><img src="icons/delete_24dp_1F1F1F_FILL0_wght400_GRAD0_opsz24.svg" alt=""></span>';
+        deleteBtn.onclick = (e) => {
+          e.stopPropagation();
+          const absoluteIndex = historyItems.length - 1 - idx;
+          historyItems.splice(absoluteIndex, 1);
+          renderHistory();
+          openHistoryDetailsModal();
+        };
+
+        row.appendChild(playBtn);
+        row.appendChild(text);
+        row.appendChild(copyBtn);
+        row.appendChild(shareBtn);
+        row.appendChild(deleteBtn);
+
+        body.appendChild(row);
+      });
+    }
+    openModal('historyDetailsModal');
+  }
+
+  function openLoginModal() {
+    openModal('loginModal');
+  }
+
+  function switchToRegister() {
+    closeAllModals();
+    openModal('registerModal');
+  }
+
+  function demoLogin() {
+    const email = byId('loginEmail').value.trim();
+    const pwd = byId('loginPassword').value.trim();
+    if (!email || !pwd) {
+      alert('Enter email and password to continue.');
+      return;
+    }
+    showToast('Logged in as ' + email + ' (demo)');
+    closeAllModals();
+  }
+
+  function demoRegister() {
+    const email = byId('registerEmail').value.trim();
+    const pwd = byId('registerPassword').value.trim();
+    const confirmPwd = byId('registerPasswordConfirm').value.trim();
+    if (!email || !pwd || !confirmPwd) {
+      alert('Fill in all fields to register.');
+      return;
+    }
+    if (pwd !== confirmPwd) {
+      alert('Passwords do not match.');
+      return;
+    }
+    showToast('Registered ' + email + ' (demo)');
+    closeAllModals();
+  }
+
+  function demoImport() {
+    const input = byId('importFileInput');
+    if (!input.files || !input.files[0]) {
+      alert('Choose a file to import.');
+      return;
+    }
+    const file = input.files[0];
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      try {
+        const text = e.target.result;
+        let data;
+        try {
+          data = JSON.parse(text);
+        } catch {
+          data = text.split('\n').filter(Boolean).map(line => {
+            const parts = line.split('/');
+            return {
+              transcript: parts[0] || line,
+              translation: parts[1] || '',
+            };
+          });
+        }
+        data.forEach(item => {
+          historyItems.push({
+            transcript: item.transcript || 'Imported transcript',
+            translation: item.translation || 'Imported translation',
+            audioUrl: demoAudioUrl
+          });
+        });
+        renderHistory();
+        showToast('Imported into history');
+        closeAllModals();
+      } catch (err) {
+        console.error(err);
+        alert('Could not parse file.');
+      }
+    };
+    reader.readAsText(file);
+  }
+
+  function demoExport() {
+    const blob = new Blob([JSON.stringify(historyItems, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'transrefine-history.json';
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    showToast('Exported history');
+    closeAllModals();
+  }
+
+  function saveDemoSettings() {
+    const maxHistory = parseInt(byId('maxHistoryInput').value, 10);
+    const maxDuration = parseInt(byId('maxDurationInput').value, 10);
+    if (!Number.isNaN(maxHistory)) {
+      localStorage.setItem('tr-max-history', String(maxHistory));
+    }
+    if (!Number.isNaN(maxDuration)) {
+      localStorage.setItem('tr-max-duration', String(maxDuration));
+    }
+    showToast('Settings saved (demo)');
+    closeAllModals();
+  }
+
+  function selectPlan(plan) {
+    demoSelectedPlan = plan;
+    const monthlyBtn = byId('planMonthlyBtn');
+    const yearlyBtn = byId('planYearlyBtn');
+    if (monthlyBtn && yearlyBtn) {
+      monthlyBtn.style.background = plan === 'monthly' ? 'var(--primary-blue)' : '#E5E7F5';
+      monthlyBtn.style.color = plan === 'monthly' ? '#fff' : '#111827';
+      yearlyBtn.style.background = plan === 'yearly' ? 'var(--primary-blue)' : '#E5E7F5';
+      yearlyBtn.style.color = plan === 'yearly' ? '#fff' : '#111827';
+    }
+    updateSubscribeStatus();
+  }
+
+  function selectPaymentMethod(method) {
+    demoPaymentMethod = method;
+    const cardForm = byId('cardForm');
+    if (cardForm) {
+      cardForm.style.display = method === 'card' ? 'block' : 'none';
+    }
+  }
+
+  function updateSubscribeStatus() {
+    const none = byId('statusNone');
+    const monthly = byId('statusMonthly');
+    const yearly = byId('statusYearly');
+    [none, monthly, yearly].forEach(el => {
+      el.style.fontWeight = 'normal';
+    });
+    if (demoSelectedPlan === 'monthly') {
+      monthly.style.fontWeight = 'bold';
+    } else if (demoSelectedPlan === 'yearly') {
+      yearly.style.fontWeight = 'bold';
+    } else {
+      none.style.fontWeight = 'bold';
+    }
+  }
+
+  function confirmDemoSubscribe() {
+    if (demoSelectedPlan === 'none') {
+      alert('Choose a plan first.');
+      return;
+    }
+    updateSubscribeStatus();
+    showToast('Subscription saved (' + demoSelectedPlan + ', ' + demoPaymentMethod + ')');
+    closeAllModals();
+  }
+
+  // Generic modal helpers
+  function openModal(id) {
+    closeAllModals();
+    const el = byId(id);
+    if (el) {
+      el.classList.add('active');
+    }
+  }
+
+  function closeAllModals() {
+    document.querySelectorAll('.modal-backdrop').forEach(el => el.classList.remove('active'));
+  }
+
+  // Side menu helpers
+  function toggleSideMenu(event) {
+    event.stopPropagation();
+    const bd = byId('sideMenuBackdrop');
+    const active = bd.classList.contains('active');
+    if (active) {
+      closeSideMenu();
+    } else {
+      bd.classList.add('active');
+    }
+  }
+
+  function closeSideMenu() {
+    byId('sideMenuBackdrop').classList.remove('active');
+  }
+
+  // Toast + clipboard
+  function showToast(message) {
+    const t = document.createElement('div');
+    t.textContent = message;
+    t.style.position = 'fixed';
+    t.style.left = '50%';
+    t.style.bottom = '20px';
+    t.style.transform = 'translateX(-50%)';
+    t.style.padding = '8px 12px';
+    t.style.borderRadius = '8px';
+    t.style.background = 'rgba(15, 23, 51, 0.9)';
+    t.style.color = '#fff';
+    t.style.fontSize = '13px';
+    t.style.zIndex = '1200';
+    t.style.pointerEvents = 'none';
+    document.body.appendChild(t);
+    setTimeout(() => t.remove(), 1200);
+  }
+
+  function copyToClipboard(text) {
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      return navigator.clipboard.writeText(text || '');
+    }
+    return new Promise(resolve => {
+      const ta = document.createElement('textarea');
+      ta.value = text || '';
+      ta.style.position = 'fixed';
+      ta.style.opacity = '0';
+      document.body.appendChild(ta);
+      ta.focus();
+      ta.select();
+      try { document.execCommand('copy'); } catch (e) {}
+      document.body.removeChild(ta);
+      resolve();
+    });
+  }
+
+  function goHome() {
+    closeAllModals();
+    closeSideMenu();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+      closeAllModals();
+      closeSideMenu();
+    }
+  });
+
+  // Initial state
+  updateSubscribeStatus();
+  selectPaymentMethod('card');
+</script>
+</body>
+</html>
