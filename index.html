@@ -293,6 +293,8 @@
     .history-text {
       flex: 1;
       text-align: left;
+      overflow-wrap: anywhere;
+      word-break: break-word;
     }
 
     .history-cta-row {
@@ -1148,7 +1150,33 @@
   }
 
   function openLoginModal() {
+    closeSideMenu();
     openModal('loginModal');
+  }
+
+  function openImportModal() {
+    closeSideMenu();
+    openModal('importModal');
+  }
+
+  function openExportModal() {
+    closeSideMenu();
+    openModal('exportModal');
+  }
+
+  function openSettingsModal() {
+    closeSideMenu();
+    openModal('settingsModal');
+  }
+
+  function openSubscribeModal() {
+    closeSideMenu();
+    openModal('subscribeModal');
+  }
+
+  function openHelpModal() {
+    closeSideMenu();
+    openModal('helpModal');
   }
 
   function switchToRegister() {
