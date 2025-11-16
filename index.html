@@ -131,6 +131,20 @@
       background: rgba(255, 255, 255, 0.1);
     }
 
+    /* Highlight header hamburger menu using primary blue */
+    .header-right .icon-button {
+      background: var(--primary-blue);
+      box-shadow: 0 4px 10px rgba(79, 142, 255, 0.4);
+    }
+
+    .header-right .icon-button:hover {
+      background: #3F79E0;
+    }
+
+    .header-right .icon img {
+      filter: invert(1);
+    }
+
     .icon {
       width: 24px;
       height: 24px;
@@ -654,7 +668,7 @@
         <span>Login</span>
       </li>
       <li onclick="openImportModal();">
-        <span class="icon"><img src="icons/export_notes_24dp_1F1F1F_FILL0_wght400_GRAD0_opsz24.svg" alt=""></span>
+        <span class="icon"><img src="icons/add_notes_24dp_1F1F1F_FILL0_wght400_GRAD0_opsz24.svg" alt=""></span>
         <span>Import</span>
       </li>
       <li onclick="openExportModal();">
