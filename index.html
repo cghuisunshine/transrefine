@@ -376,7 +376,7 @@
       width: 230px;
       max-width: 80%;
       height: 100%;
-      background: #FFFFFF;
+      background: var(--bg-dark);
       box-shadow: -12px 0 30px rgba(15, 23, 51, 0.35);
       padding-top: 60px;
       display: flex;
@@ -396,16 +396,21 @@
       padding: 10px 16px;
       cursor: pointer;
       font-size: 14px;
-      color: #111827;
+      color: #E5E7F5;
+      background: transparent;
     }
 
     .side-menu li:hover {
-      background: #F3F4FF;
+      background: rgba(255, 255, 255, 0.06);
     }
 
     .side-menu li .icon {
       width: 20px;
       height: 20px;
+    }
+
+    .side-menu li .icon img {
+      filter: invert(1);
     }
 
     /* Modals (S3–S14) */
@@ -516,6 +521,50 @@
       font-size: 12px;
     }
 
+    /* Subscribe (S14) */
+    .subscribe-layout {
+      flex-direction: row;
+      gap: 22px;
+      align-items: flex-start;
+    }
+
+    .subscribe-panel {
+      background: linear-gradient(135deg, #F3F4FF, #EAF1FF);
+      border-radius: 14px;
+      padding: 14px 16px;
+      box-shadow: 0 8px 20px rgba(15, 23, 51, 0.08);
+    }
+
+    .subscribe-panel-main {
+      flex: 2;
+    }
+
+    .subscribe-panel-status {
+      flex: 1;
+    }
+
+    .subscribe-section-title {
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+
+    .subscribe-plan-button,
+    .subscribe-pay-button {
+      font-weight: 600;
+      padding-inline: 18px;
+    }
+
+    .subscribe-status-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      font-size: 14px;
+    }
+
+    .subscribe-status-list li + li {
+      margin-top: 2px;
+    }
+
     @media (max-width: 640px) {
       .app-shell {
         padding: 12px 10px 72px;
@@ -593,14 +642,13 @@
       <!-- Transcript row -->
       <div class="text-row">
         <div class="text-row-label">
-          <span class="icon"><img src="icons/edit_24dp_1F1F1F_FILL0_wght400_GRAD0_opsz24.svg" alt=""></span>
+          <button class="icon-button" aria-label="Edit transcript" onclick="openEditModal('transcript')">
+            <span class="icon"><img src="icons/edit_24dp_1F1F1F_FILL0_wght400_GRAD0_opsz24.svg" alt=""></span>
+          </button>
         </div>
         <div class="text-row-main" id="transcriptRow">
           <span id="transcriptText">Your transcript will appear here after you speak or paste text.</span>
           <div class="text-row-actions">
-            <button class="icon-button" aria-label="Edit transcript" onclick="openEditModal('transcript')">
-              <span class="icon"><img src="icons/edit_24dp_1F1F1F_FILL0_wght400_GRAD0_opsz24.svg" alt=""></span>
-            </button>
             <button class="icon-button" aria-label="Copy transcript" onclick="copyTextFromElement('transcriptText')">
               <span class="icon"><img src="icons/content_copy_24dp_1F1F1F_FILL0_wght400_GRAD0_opsz24.svg" alt=""></span>
             </button>
@@ -664,7 +712,7 @@
         <span>Home / Translate</span>
       </li>
       <li onclick="openLoginModal();">
-        <span class="icon"><img src="icons/check_24dp_1F1F1F_FILL0_wght400_GRAD0_opsz24.svg" alt=""></span>
+        <span class="icon"><img src="icons/login_24dp_1F1F1F_FILL0_wght400_GRAD0_opsz24.svg" alt=""></span>
         <span>Login</span>
       </li>
       <li onclick="openImportModal();">
@@ -680,7 +728,7 @@
         <span>Settings</span>
       </li>
       <li onclick="openSubscribeModal();">
-        <span class="icon"><img src="icons/check_box_24dp_1F1F1F_FILL0_wght400_GRAD0_opsz24.svg" alt=""></span>
+        <span class="icon"><img src="icons/subscriptions_24dp_1F1F1F_FILL0_wght400_GRAD0_opsz24.svg" alt=""></span>
         <span>Subscribe</span>
       </li>
       <li onclick="openHelpModal();">
@@ -891,25 +939,25 @@
 <div id="subscribeModal" class="modal-backdrop">
   <div class="modal-card" style="max-width:720px;">
     <div class="modal-header">Subscribe</div>
-    <div class="modal-body" style="flex-direction:row; gap:22px; align-items:flex-start;">
-      <div style="flex:2; background:#F3F4FF; padding:12px; border-radius:12px;">
+    <div class="modal-body subscribe-layout">
+      <div class="subscribe-panel subscribe-panel-main">
         <div class="chip-row" style="margin-bottom:10px;">
-          <button class="btn btn-secondary pill-button" id="planMonthlyBtn" onclick="selectPlan('monthly')">Monthly – $10</button>
-          <button class="btn btn-secondary pill-button" id="planYearlyBtn" onclick="selectPlan('yearly')">Yearly – $100</button>
+          <button class="btn btn-secondary pill-button subscribe-plan-button" id="planMonthlyBtn" onclick="selectPlan('monthly')">Monthly – $10</button>
+          <button class="btn btn-secondary pill-button subscribe-plan-button" id="planYearlyBtn" onclick="selectPlan('yearly')">Yearly – $100</button>
         </div>
-        <div style="font-weight:600; margin-bottom:6px;">Payment methods</div>
+        <div class="subscribe-section-title">Payment methods</div>
         <div class="chip-row" style="margin-bottom:8px;">
-          <button class="btn btn-secondary pill-button" onclick="selectPaymentMethod('card')">Credit card</button>
-          <button class="btn btn-secondary pill-button" onclick="selectPaymentMethod('paypal')">PayPal</button>
+          <button class="btn btn-secondary pill-button subscribe-pay-button" data-pay-method="card" onclick="selectPaymentMethod('card')">Credit card</button>
+          <button class="btn btn-secondary pill-button subscribe-pay-button" data-pay-method="paypal" onclick="selectPaymentMethod('paypal')">PayPal</button>
         </div>
         <div id="cardForm">
           <input type="text" placeholder="Card number" style="width:100%; margin-bottom:6px;">
           <input type="text" placeholder="MM/YY CVC" style="width:100%;">
         </div>
       </div>
-      <div style="flex:1; background:#F3F4FF; padding:12px; border-radius:12px;">
-        <div style="font-weight:600; margin-bottom:6px;">Subscribe status</div>
-        <ul style="list-style:none; padding:0; margin:0; font-size:14px;">
+      <div class="subscribe-panel subscribe-panel-status">
+        <div class="subscribe-section-title">Subscribe status</div>
+        <ul class="subscribe-status-list">
           <li id="statusNone">None</li>
           <li id="statusMonthly">Monthly</li>
           <li id="statusYearly">Yearly</li>
@@ -917,6 +965,7 @@
       </div>
     </div>
     <div class="modal-actions">
+      <button class="btn btn-text" onclick="confirmDemoUnsubscribe()">Unsubscribe</button>
       <button class="btn btn-secondary" onclick="closeAllModals()">Cancel</button>
       <button class="btn btn-primary" onclick="confirmDemoSubscribe()">Subscribe &amp; pay</button>
     </div>
@@ -1311,6 +1360,12 @@
     if (cardForm) {
       cardForm.style.display = method === 'card' ? 'block' : 'none';
     }
+    const buttons = document.querySelectorAll('#subscribeModal [data-pay-method]');
+    buttons.forEach(btn => {
+      const active = btn.dataset.payMethod === method;
+      btn.style.background = active ? 'var(--primary-blue)' : '#E5E7F5';
+      btn.style.color = active ? '#fff' : '#111827';
+    });
   }
 
   function updateSubscribeStatus() {
@@ -1319,14 +1374,16 @@
     const yearly = byId('statusYearly');
     [none, monthly, yearly].forEach(el => {
       el.style.fontWeight = 'normal';
+      el.style.color = '#111827';
     });
+    let active = none;
     if (demoSelectedPlan === 'monthly') {
-      monthly.style.fontWeight = 'bold';
+      active = monthly;
     } else if (demoSelectedPlan === 'yearly') {
-      yearly.style.fontWeight = 'bold';
-    } else {
-      none.style.fontWeight = 'bold';
+      active = yearly;
     }
+    active.style.fontWeight = 'bold';
+    active.style.color = 'var(--primary-blue)';
   }
 
   function confirmDemoSubscribe() {
@@ -1336,6 +1393,13 @@
     }
     updateSubscribeStatus();
     showToast('Subscription saved (' + demoSelectedPlan + ', ' + demoPaymentMethod + ')');
+    closeAllModals();
+  }
+
+  function confirmDemoUnsubscribe() {
+    demoSelectedPlan = 'none';
+    updateSubscribeStatus();
+    showToast('Subscription cancelled');
     closeAllModals();
   }
 
