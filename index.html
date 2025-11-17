@@ -306,6 +306,10 @@
 
     .history-text {
       flex: 1;
+      display: inline-flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 4px;
       text-align: left;
       overflow-wrap: anywhere;
       word-break: break-word;
@@ -989,6 +993,17 @@
     return document.getElementById(id);
   }
 
+  function appendToMainText(spanId, value, placeholder) {
+    const span = byId(spanId);
+    if (!span) return;
+    const current = span.textContent || '';
+    if (!current || current === placeholder) {
+      span.textContent = value;
+    } else {
+      span.textContent = current + ' ' + value;
+    }
+  }
+
   function renderHistory() {
     const list = byId('historyList');
     list.innerHTML = '';
@@ -1006,18 +1021,36 @@
 
       const text = document.createElement('div');
       text.className = 'history-text';
-      text.textContent = item.transcript + ' / ' + item.translation;
       text.onclick = () => {
         byId('transcriptText').textContent = item.transcript;
         byId('translationText').textContent = item.translation;
       };
 
-      const copyBtn = document.createElement('button');
-      copyBtn.className = 'icon-button';
-      copyBtn.innerHTML = '<span class="icon"><img src="icons/content_copy_24dp_1F1F1F_FILL0_wght400_GRAD0_opsz24.svg" alt=""></span>';
-      copyBtn.onclick = (e) => {
+      const transcriptSpan = document.createElement('span');
+      transcriptSpan.textContent = item.transcript;
+
+      const copyTranscriptInlineBtn = document.createElement('button');
+      copyTranscriptInlineBtn.className = 'icon-button';
+      copyTranscriptInlineBtn.title = 'Copy input';
+      copyTranscriptInlineBtn.innerHTML = '<span class="icon"><img src="icons/content_copy_24dp_1F1F1F_FILL0_wght400_GRAD0_opsz24.svg" alt=""></span>';
+      copyTranscriptInlineBtn.onclick = (e) => {
         e.stopPropagation();
-        copyToClipboard(item.translation).then(() => showToast('Copied translation'));
+        showToast('Input copied');
+      };
+
+      const slashSpan = document.createElement('span');
+      slashSpan.textContent = '/';
+
+      const translationSpan = document.createElement('span');
+      translationSpan.textContent = item.translation;
+
+      const copyTranslationBtn = document.createElement('button');
+      copyTranslationBtn.className = 'icon-button';
+      copyTranslationBtn.title = 'Copy translation/refine';
+      copyTranslationBtn.innerHTML = '<span class="icon"><img src="icons/content_copy_24dp_1F1F1F_FILL0_wght400_GRAD0_opsz24.svg" alt=""></span>';
+      copyTranslationBtn.onclick = (e) => {
+        e.stopPropagation();
+        showToast('Translation or refine copied');
       };
 
       const shareBtn = document.createElement('button');
@@ -1029,9 +1062,14 @@
         openShareModal();
       };
 
+      text.appendChild(transcriptSpan);
+      text.appendChild(copyTranscriptInlineBtn);
+      text.appendChild(slashSpan);
+      text.appendChild(translationSpan);
+
       row.appendChild(playBtn);
       row.appendChild(text);
-      row.appendChild(copyBtn);
+      row.appendChild(copyTranslationBtn);
       row.appendChild(shareBtn);
       list.appendChild(row);
     });
@@ -1172,14 +1210,41 @@
 
         const text = document.createElement('div');
         text.className = 'history-text';
-        text.textContent = item.transcript + ' / ' + item.translation;
 
-        const copyBtn = document.createElement('button');
-        copyBtn.className = 'icon-button';
-        copyBtn.innerHTML = '<span class="icon"><img src="icons/content_copy_24dp_1F1F1F_FILL0_wght400_GRAD0_opsz24.svg" alt=""></span>';
-        copyBtn.onclick = (e) => {
+        const transcriptSpan = document.createElement('span');
+        transcriptSpan.textContent = item.transcript;
+
+        const copyTranscriptInlineBtn = document.createElement('button');
+        copyTranscriptInlineBtn.className = 'icon-button';
+        copyTranscriptInlineBtn.title = 'Copy input';
+        copyTranscriptInlineBtn.innerHTML = '<span class="icon"><img src="icons/content_copy_24dp_1F1F1F_FILL0_wght400_GRAD0_opsz24.svg" alt=""></span>';
+        copyTranscriptInlineBtn.onclick = (e) => {
           e.stopPropagation();
-          copyToClipboard(item.translation).then(() => showToast('Copied translation'));
+          showToast('Input copied');
+        };
+
+        const slashSpan = document.createElement('span');
+        slashSpan.textContent = '/';
+
+        const translationSpan = document.createElement('span');
+        translationSpan.textContent = item.translation;
+
+        const copyTranscriptBtn = document.createElement('button');
+        copyTranscriptBtn.className = 'icon-button';
+        copyTranscriptBtn.title = 'Copy input';
+        copyTranscriptBtn.innerHTML = '<span class="icon"><img src="icons/content_copy_24dp_1F1F1F_FILL0_wght400_GRAD0_opsz24.svg" alt=""></span>';
+        copyTranscriptBtn.onclick = (e) => {
+          e.stopPropagation();
+          showToast('Input copied');
+        };
+
+        const copyTranslationBtn = document.createElement('button');
+        copyTranslationBtn.className = 'icon-button';
+        copyTranslationBtn.title = 'Copy translation/refine';
+        copyTranslationBtn.innerHTML = '<span class="icon"><img src="icons/content_copy_24dp_1F1F1F_FILL0_wght400_GRAD0_opsz24.svg" alt=""></span>';
+        copyTranslationBtn.onclick = (e) => {
+          e.stopPropagation();
+          showToast('Translation or refine copied');
         };
 
         const shareBtn = document.createElement('button');
@@ -1202,9 +1267,15 @@
           openHistoryDetailsModal();
         };
 
+        text.appendChild(transcriptSpan);
+        text.appendChild(copyTranscriptInlineBtn);
+        text.appendChild(slashSpan);
+        text.appendChild(translationSpan);
+
         row.appendChild(playBtn);
         row.appendChild(text);
-        row.appendChild(copyBtn);
+        row.appendChild(copyTranscriptBtn);
+        row.appendChild(copyTranslationBtn);
         row.appendChild(shareBtn);
         row.appendChild(deleteBtn);
 
