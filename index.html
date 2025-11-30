@@ -131,6 +131,51 @@
       background: rgba(255, 255, 255, 0.1);
     }
 
+    [data-tooltip] {
+      position: relative;
+    }
+
+    [data-tooltip]::after {
+      content: attr(data-tooltip);
+      position: absolute;
+      bottom: calc(100% + 10px);
+      left: 50%;
+      transform: translate(-50%, 6px);
+      background: rgba(15, 23, 51, 0.94);
+      color: #fff;
+      padding: 6px 9px;
+      border-radius: 8px;
+      font-size: 12px;
+      white-space: nowrap;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.15s ease, transform 0.15s ease;
+      z-index: 1100;
+      box-shadow: 0 8px 18px rgba(15, 23, 51, 0.25);
+    }
+
+    [data-tooltip]::before {
+      content: '';
+      position: absolute;
+      bottom: 100%;
+      left: 50%;
+      transform: translateX(-50%);
+      border-width: 6px;
+      border-style: solid;
+      border-color: transparent transparent rgba(15, 23, 51, 0.94) transparent;
+      opacity: 0;
+      transition: opacity 0.15s ease;
+      z-index: 1100;
+    }
+
+    [data-tooltip]:hover::after,
+    [data-tooltip]:hover::before,
+    [data-tooltip]:focus-visible::after,
+    [data-tooltip]:focus-visible::before {
+      opacity: 1;
+      transform: translate(-50%, 0);
+    }
+
     /* Highlight header hamburger menu using primary blue */
     .header-right .icon-button {
       background: var(--primary-blue);
@@ -609,7 +654,7 @@
         </div>
       </div>
       <div class="header-right">
-        <button class="icon-button" aria-label="Open menu" onclick="toggleSideMenu(event)">
+        <button class="icon-button" aria-label="Open menu" data-tooltip="Open menu" onclick="toggleSideMenu(event)">
           <span class="icon"><img src="icons/menu_24dp_1F1F1F_FILL0_wght400_GRAD0_opsz24.svg" alt=""></span>
         </button>
       </div>
@@ -647,14 +692,14 @@
       <!-- Transcript row -->
       <div class="text-row">
         <div class="text-row-label">
-          <button class="icon-button" aria-label="Edit transcript" onclick="openEditModal('transcript')">
+          <button class="icon-button" aria-label="Edit transcript" data-tooltip="Edit transcript text" onclick="openEditModal('transcript')">
             <span class="icon"><img src="icons/edit_24dp_1F1F1F_FILL0_wght400_GRAD0_opsz24.svg" alt=""></span>
           </button>
         </div>
         <div class="text-row-main" id="transcriptRow">
           <span id="transcriptText">Your transcript will appear here after you speak or paste text.</span>
           <div class="text-row-actions">
-            <button class="icon-button" aria-label="Copy transcript" onclick="copyTextFromElement('transcriptText')">
+            <button class="icon-button" aria-label="Copy transcript" data-tooltip="Copy transcript" onclick="copyTextFromElement('transcriptText')">
               <span class="icon"><img src="icons/content_copy_24dp_1F1F1F_FILL0_wght400_GRAD0_opsz24.svg" alt=""></span>
             </button>
           </div>
@@ -664,17 +709,17 @@
       <!-- Translation row -->
       <div class="text-row">
         <div class="text-row-label">
-          <button class="icon-button" aria-label="Play translation audio" onclick="openPlayAudioFromCurrent()">
+          <button class="icon-button" aria-label="Play translation audio" data-tooltip="Play translation audio" onclick="openPlayAudioFromCurrent()">
             <span class="icon"><img src="icons/volume_up_24dp_1F1F1F_FILL0_wght400_GRAD0_opsz24.svg" alt=""></span>
           </button>
         </div>
         <div class="text-row-main" id="translationRow">
           <span id="translationText">Refined translation will appear here.</span>
           <div class="text-row-actions">
-            <button class="icon-button" aria-label="Copy translation" onclick="copyTextFromElement('translationText')">
+            <button class="icon-button" aria-label="Copy translation" data-tooltip="Copy translation" onclick="copyTextFromElement('translationText')">
               <span class="icon"><img src="icons/content_copy_24dp_1F1F1F_FILL0_wght400_GRAD0_opsz24.svg" alt=""></span>
             </button>
-            <button class="icon-button" aria-label="Share translation audio" onclick="shareCurrent()">
+            <button class="icon-button" aria-label="Share translation audio" data-tooltip="Share translation audio" onclick="shareCurrent()">
               <span class="icon"><img src="icons/share_24dp_1F1F1F_FILL0_wght400_GRAD0_opsz24.svg" alt=""></span>
             </button>
           </div>
@@ -703,7 +748,7 @@
 </main>
 
 <!-- Hold2Say floating button -->
-<button class="floating-mic" onclick="simulateSpeaking('hold')">
+<button class="floating-mic" aria-label="Hold to speak" data-tooltip="Hold to speak with your mic" onclick="simulateSpeaking('hold')">
   <span class="icon"><img src="icons/mic_24dp_1F1F1F_FILL0_wght400_GRAD0_opsz24.svg" alt=""></span>
   <span>Hold2Say</span>
 </button>
@@ -1004,6 +1049,14 @@
     return document.getElementById(id);
   }
 
+  function addTooltip(el, text) {
+    if (!el) return;
+    el.dataset.tooltip = text;
+    if (!el.getAttribute('aria-label')) {
+      el.setAttribute('aria-label', text);
+    }
+  }
+
   function appendToMainText(spanId, value, placeholder) {
     const span = byId(spanId);
     if (!span) return;
@@ -1029,6 +1082,7 @@
         e.stopPropagation();
         openPlayAudioModal(item.audioUrl || demoAudioUrl);
       };
+      addTooltip(playBtn, 'Play audio');
 
       const text = document.createElement('div');
       text.className = 'history-text';
@@ -1042,12 +1096,12 @@
 
       const copyTranscriptInlineBtn = document.createElement('button');
       copyTranscriptInlineBtn.className = 'icon-button';
-      copyTranscriptInlineBtn.title = 'Copy input';
       copyTranscriptInlineBtn.innerHTML = '<span class="icon"><img src="icons/content_copy_24dp_1F1F1F_FILL0_wght400_GRAD0_opsz24.svg" alt=""></span>';
       copyTranscriptInlineBtn.onclick = (e) => {
         e.stopPropagation();
         showToast('Input copied');
       };
+      addTooltip(copyTranscriptInlineBtn, 'Copy input');
 
       const slashSpan = document.createElement('span');
       slashSpan.textContent = '/';
@@ -1057,12 +1111,12 @@
 
       const copyTranslationBtn = document.createElement('button');
       copyTranslationBtn.className = 'icon-button';
-      copyTranslationBtn.title = 'Copy translation/refine';
       copyTranslationBtn.innerHTML = '<span class="icon"><img src="icons/content_copy_24dp_1F1F1F_FILL0_wght400_GRAD0_opsz24.svg" alt=""></span>';
       copyTranslationBtn.onclick = (e) => {
         e.stopPropagation();
         showToast('Translation or refine copied');
       };
+      addTooltip(copyTranslationBtn, 'Copy translation/refine');
 
       const shareBtn = document.createElement('button');
       shareBtn.className = 'icon-button';
@@ -1072,6 +1126,7 @@
         pendingShare = { url: item.audioUrl || demoAudioUrl, text: item.translation };
         openShareModal();
       };
+      addTooltip(shareBtn, 'Share translation audio');
 
       text.appendChild(transcriptSpan);
       text.appendChild(copyTranscriptInlineBtn);
@@ -1242,6 +1297,7 @@
         e.stopPropagation();
         openPlayAudioModal(item.audioUrl || demoAudioUrl);
       };
+      addTooltip(playBtn, 'Play audio');
 
       const text = document.createElement('div');
       text.className = 'history-text';
@@ -1251,12 +1307,12 @@
 
       const copyTranscriptInlineBtn = document.createElement('button');
       copyTranscriptInlineBtn.className = 'icon-button';
-      copyTranscriptInlineBtn.title = 'Copy input';
       copyTranscriptInlineBtn.innerHTML = '<span class="icon"><img src="icons/content_copy_24dp_1F1F1F_FILL0_wght400_GRAD0_opsz24.svg" alt=""></span>';
       copyTranscriptInlineBtn.onclick = (e) => {
         e.stopPropagation();
         showToast('Input copied');
       };
+      addTooltip(copyTranscriptInlineBtn, 'Copy input');
 
       const slashSpan = document.createElement('span');
       slashSpan.textContent = '/';
@@ -1266,21 +1322,21 @@
 
       const copyTranscriptBtn = document.createElement('button');
       copyTranscriptBtn.className = 'icon-button';
-      copyTranscriptBtn.title = 'Copy input';
       copyTranscriptBtn.innerHTML = '<span class="icon"><img src="icons/content_copy_24dp_1F1F1F_FILL0_wght400_GRAD0_opsz24.svg" alt=""></span>';
       copyTranscriptBtn.onclick = (e) => {
         e.stopPropagation();
         showToast('Input copied');
       };
+      addTooltip(copyTranscriptBtn, 'Copy input');
 
       const copyTranslationBtn = document.createElement('button');
       copyTranslationBtn.className = 'icon-button';
-      copyTranslationBtn.title = 'Copy translation/refine';
       copyTranslationBtn.innerHTML = '<span class="icon"><img src="icons/content_copy_24dp_1F1F1F_FILL0_wght400_GRAD0_opsz24.svg" alt=""></span>';
       copyTranslationBtn.onclick = (e) => {
         e.stopPropagation();
         showToast('Translation or refine copied');
       };
+      addTooltip(copyTranslationBtn, 'Copy translation/refine');
 
       const shareBtn = document.createElement('button');
       shareBtn.className = 'icon-button';
@@ -1290,6 +1346,7 @@
         pendingShare = { url: item.audioUrl || demoAudioUrl, text: item.translation };
         openShareModal();
       };
+      addTooltip(shareBtn, 'Share translation audio');
 
       const deleteBtn = document.createElement('button');
       deleteBtn.className = 'icon-button';
@@ -1300,6 +1357,7 @@
         renderHistory();
         renderHistoryDetails();
       };
+      addTooltip(deleteBtn, 'Delete from history');
 
       text.appendChild(transcriptSpan);
       text.appendChild(copyTranscriptInlineBtn);
