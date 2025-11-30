@@ -318,6 +318,24 @@
       padding: 2px;
     }
 
+    .refine-hint {
+      font-size: 12px;
+      color: #4B5563;
+      margin: 2px 0 4px;
+    }
+
+    .visually-hidden {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
+    }
+
     /* History */
     .history-header {
       display: flex;
@@ -681,11 +699,12 @@
           <span>Start Speaking</span>
         </button>
 
-        <label class="checkbox-inline">
-          <input type="checkbox" id="refineOnlyCheckbox">
+        <label class="checkbox-inline" data-tooltip="Keeps the language the same and just polishes tone, grammar, and clarity—leave unchecked to translate between English and Chinese.">
+          <input type="checkbox" id="refineOnlyCheckbox" aria-describedby="refineOnlyHint">
           <span>Refine only</span>
         </label>
       </div>
+      <p class="refine-hint visually-hidden" id="refineOnlyHint">Keeps the language the same and just polishes tone, grammar, and clarity—leave unchecked to translate between English and Chinese.</p>
 
       <div class="divider"></div>
 
