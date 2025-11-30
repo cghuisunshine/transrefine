@@ -296,14 +296,14 @@
       background: #F9FAFF;
       font-size: 14px;
       min-height: 40px;
-      display: flex;
+      display: grid;
+      grid-template-columns: 1fr auto auto;
       align-items: center;
-      justify-content: space-between;
-      gap: 12px;
+      gap: 10px;
     }
 
-    .text-row-main span {
-      flex: 1;
+    .text-row-main .text-content {
+      min-width: 0;
       text-align: left;
       color: #1F2933;
     }
@@ -316,6 +316,35 @@
 
     .text-row-actions .icon-button {
       padding: 2px;
+    }
+
+    .icon-button.has-hover-label {
+      position: relative;
+    }
+
+    .icon-button .hover-label {
+      position: absolute;
+      top: 50%;
+      left: 100%;
+      transform: translate(8px, -50%) scale(0.95);
+      transform-origin: left center;
+      background: #0F1733;
+      color: #fff;
+      padding: 2px 8px;
+      border-radius: 8px;
+      font-size: 11px;
+      white-space: nowrap;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.14s ease, transform 0.14s ease;
+      box-shadow: 0 6px 14px rgba(15, 23, 51, 0.25);
+      z-index: 1150;
+    }
+
+    .icon-button.has-hover-label:hover .hover-label,
+    .icon-button.has-hover-label:focus-visible .hover-label {
+      opacity: 1;
+      transform: translate(8px, -50%) scale(1);
     }
 
     .refine-hint {
@@ -396,6 +425,23 @@
       display: inline-flex;
       align-items: center;
       gap: 4px;
+    }
+
+    .history-link-inline {
+      display: flex;
+      justify-content: flex-end;
+      margin: 4px 2px 10px;
+    }
+
+    .history-link-inline .link-btn {
+      font-size: 14px;
+      padding: 6px 10px;
+      background: rgba(79, 142, 255, 0.12);
+      border-radius: 10px;
+    }
+
+    .history-link-inline .link-btn:hover {
+      background: rgba(79, 142, 255, 0.2);
     }
 
     .floating-mic {
@@ -716,12 +762,11 @@
           </button>
         </div>
         <div class="text-row-main" id="transcriptRow">
-          <span id="transcriptText">Your transcript will appear here after you speak or paste text.</span>
-          <div class="text-row-actions">
-            <button class="icon-button" aria-label="Copy transcript" data-tooltip="Copy transcript" onclick="copyTextFromElement('transcriptText')">
-              <span class="icon"><img src="icons/content_copy_24dp_1F1F1F_FILL0_wght400_GRAD0_opsz24.svg" alt=""></span>
-            </button>
-          </div>
+          <span id="transcriptText" class="text-content">Your transcript will appear here after you speak or paste text.</span>
+          <button class="icon-button has-hover-label" aria-label="Copy transcript" data-tooltip="Copy transcript" onclick="copyTextFromElement('transcriptText')">
+            <span class="icon"><img src="icons/content_copy_24dp_1F1F1F_FILL0_wght400_GRAD0_opsz24.svg" alt=""></span>
+            <span class="hover-label">Copy input</span>
+          </button>
         </div>
       </div>
 
@@ -733,24 +778,25 @@
           </button>
         </div>
         <div class="text-row-main" id="translationRow">
-          <span id="translationText">Refined translation will appear here.</span>
-          <div class="text-row-actions">
-            <button class="icon-button" aria-label="Copy translation" data-tooltip="Copy translation" onclick="copyTextFromElement('translationText')">
-              <span class="icon"><img src="icons/content_copy_24dp_1F1F1F_FILL0_wght400_GRAD0_opsz24.svg" alt=""></span>
-            </button>
-            <button class="icon-button" aria-label="Share translation audio" data-tooltip="Share translation audio" onclick="shareCurrent()">
-              <span class="icon"><img src="icons/share_24dp_1F1F1F_FILL0_wght400_GRAD0_opsz24.svg" alt=""></span>
-            </button>
-          </div>
+          <span id="translationText" class="text-content">Refined translation will appear here.</span>
+          <button class="icon-button has-hover-label" aria-label="Copy translation" data-tooltip="Copy translation" onclick="copyTextFromElement('translationText')">
+            <span class="icon"><img src="icons/content_copy_24dp_1F1F1F_FILL0_wght400_GRAD0_opsz24.svg" alt=""></span>
+            <span class="hover-label">Copy output</span>
+          </button>
+          <button class="icon-button" aria-label="Share translation audio" data-tooltip="Share translation audio" onclick="shareCurrent()">
+            <span class="icon"><img src="icons/share_24dp_1F1F1F_FILL0_wght400_GRAD0_opsz24.svg" alt=""></span>
+          </button>
         </div>
+      </div>
+      <div class="history-link-inline">
+        <button class="link-btn" onclick="openHistoryDetailsModal()">
+          <span class="icon" style="width:18px;height:18px;"><img src="icons/history_2_24dp_1F1F1F_FILL0_wght400_GRAD0_opsz24.svg" alt=""></span>
+          <span>History details</span>
+        </button>
       </div>
 
       <div class="history-header">
         <span>Recent history</span>
-        <button class="link-btn" onclick="openHistoryDetailsModal()">
-          <span class="icon" style="width:16px;height:16px;"><img src="icons/history_2_24dp_1F1F1F_FILL0_wght400_GRAD0_opsz24.svg" alt=""></span>
-          <span>History details</span>
-        </button>
       </div>
 
       <div id="historyList" class="history-list"></div>
@@ -1114,8 +1160,8 @@
       transcriptSpan.textContent = item.transcript;
 
       const copyTranscriptInlineBtn = document.createElement('button');
-      copyTranscriptInlineBtn.className = 'icon-button';
-      copyTranscriptInlineBtn.innerHTML = '<span class="icon"><img src="icons/content_copy_24dp_1F1F1F_FILL0_wght400_GRAD0_opsz24.svg" alt=""></span>';
+      copyTranscriptInlineBtn.className = 'icon-button has-hover-label';
+      copyTranscriptInlineBtn.innerHTML = '<span class="icon"><img src="icons/content_copy_24dp_1F1F1F_FILL0_wght400_GRAD0_opsz24.svg" alt=""></span><span class="hover-label">Copy input</span>';
       copyTranscriptInlineBtn.onclick = (e) => {
         e.stopPropagation();
         showToast('Input copied');
@@ -1129,8 +1175,8 @@
       translationSpan.textContent = item.translation;
 
       const copyTranslationBtn = document.createElement('button');
-      copyTranslationBtn.className = 'icon-button';
-      copyTranslationBtn.innerHTML = '<span class="icon"><img src="icons/content_copy_24dp_1F1F1F_FILL0_wght400_GRAD0_opsz24.svg" alt=""></span>';
+      copyTranslationBtn.className = 'icon-button has-hover-label';
+      copyTranslationBtn.innerHTML = '<span class="icon"><img src="icons/content_copy_24dp_1F1F1F_FILL0_wght400_GRAD0_opsz24.svg" alt=""></span><span class="hover-label">Copy output</span>';
       copyTranslationBtn.onclick = (e) => {
         e.stopPropagation();
         showToast('Translation or refine copied');
@@ -1325,8 +1371,8 @@
       transcriptSpan.textContent = item.transcript;
 
       const copyTranscriptInlineBtn = document.createElement('button');
-      copyTranscriptInlineBtn.className = 'icon-button';
-      copyTranscriptInlineBtn.innerHTML = '<span class="icon"><img src="icons/content_copy_24dp_1F1F1F_FILL0_wght400_GRAD0_opsz24.svg" alt=""></span>';
+      copyTranscriptInlineBtn.className = 'icon-button has-hover-label';
+      copyTranscriptInlineBtn.innerHTML = '<span class="icon"><img src="icons/content_copy_24dp_1F1F1F_FILL0_wght400_GRAD0_opsz24.svg" alt=""></span><span class="hover-label">Copy input</span>';
       copyTranscriptInlineBtn.onclick = (e) => {
         e.stopPropagation();
         showToast('Input copied');
@@ -1340,8 +1386,8 @@
       translationSpan.textContent = item.translation;
 
       const copyTranscriptBtn = document.createElement('button');
-      copyTranscriptBtn.className = 'icon-button';
-      copyTranscriptBtn.innerHTML = '<span class="icon"><img src="icons/content_copy_24dp_1F1F1F_FILL0_wght400_GRAD0_opsz24.svg" alt=""></span>';
+      copyTranscriptBtn.className = 'icon-button has-hover-label';
+      copyTranscriptBtn.innerHTML = '<span class="icon"><img src="icons/content_copy_24dp_1F1F1F_FILL0_wght400_GRAD0_opsz24.svg" alt=""></span><span class="hover-label">Copy input</span>';
       copyTranscriptBtn.onclick = (e) => {
         e.stopPropagation();
         showToast('Input copied');
@@ -1349,8 +1395,8 @@
       addTooltip(copyTranscriptBtn, 'Copy input');
 
       const copyTranslationBtn = document.createElement('button');
-      copyTranslationBtn.className = 'icon-button';
-      copyTranslationBtn.innerHTML = '<span class="icon"><img src="icons/content_copy_24dp_1F1F1F_FILL0_wght400_GRAD0_opsz24.svg" alt=""></span>';
+      copyTranslationBtn.className = 'icon-button has-hover-label';
+      copyTranslationBtn.innerHTML = '<span class="icon"><img src="icons/content_copy_24dp_1F1F1F_FILL0_wght400_GRAD0_opsz24.svg" alt=""></span><span class="hover-label">Copy output</span>';
       copyTranslationBtn.onclick = (e) => {
         e.stopPropagation();
         showToast('Translation or refine copied');
